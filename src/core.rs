@@ -7,6 +7,7 @@ use std::{
 
 extern "C" {
     fn solver_new() -> *mut c_void;
+    fn solver_free(s: *mut c_void);
     fn solver_new_var(s: *mut c_void) -> c_int;
     fn solver_num_var(s: *mut c_void) -> c_int;
     fn solver_add_clause(s: *mut c_void, clause: *mut c_int, len: c_int) -> bool;
@@ -92,6 +93,12 @@ impl Solver {
             solver: self.solver,
             _pd: PhantomData,
         }
+    }
+}
+
+impl Drop for Solver {
+    fn drop(&mut self) {
+        unsafe { solver_free(self.solver) }
     }
 }
 

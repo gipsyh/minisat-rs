@@ -34,6 +34,11 @@ void *solver_new()
 	return new BindingSolver();
 }
 
+void solver_free(void *s) {
+	BindingSolver *slv = s;
+	delete slv;
+}
+
 int solver_new_var(void *s)
 {
 	BindingSolver *slv = s;
@@ -118,6 +123,11 @@ extern "C" {
 void *simp_solver_new()
 {
 	return new BindingSimpSolver();
+}
+
+void simp_solver_free(void *s) {
+	BindingSimpSolver *slv = s;
+	delete slv;
 }
 
 int simp_solver_new_var(void *s)

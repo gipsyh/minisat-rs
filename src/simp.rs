@@ -3,6 +3,7 @@ use logic_form::{Clause, Cnf, Var};
 
 extern "C" {
     fn simp_solver_new() -> *mut c_void;
+    fn simp_solver_free(s: *mut c_void);
     fn simp_solver_new_var(s: *mut c_void) -> c_int;
     fn simp_solver_num_var(s: *mut c_void) -> c_int;
     fn simp_solver_add_clause(s: *mut c_void, clause: *mut c_int, len: c_int) -> bool;
@@ -58,5 +59,11 @@ impl SimpSolver {
             }
             cnf
         }
+    }
+}
+
+impl Drop for SimpSolver {
+    fn drop(&mut self) {
+        unsafe { simp_solver_free(self.solver) }
     }
 }
