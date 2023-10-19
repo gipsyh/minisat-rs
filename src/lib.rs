@@ -1,13 +1,14 @@
 mod core;
 pub use core::*;
+mod simp;
+pub use simp::*;
+
+use logic_form::Lit;
 use std::{
     ffi::{c_int, c_void},
     fmt::{self, Debug},
     marker::PhantomData,
 };
-mod simp;
-use logic_form::Lit;
-pub use simp::*;
 
 extern "C" {
     fn solver_model_value(s: *mut c_void, lit: c_int) -> c_int;

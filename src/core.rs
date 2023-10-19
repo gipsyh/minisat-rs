@@ -1,14 +1,14 @@
+use crate::{Conflict, Model, SatResult};
 use logic_form::{Lit, Var};
 use std::{
     ffi::{c_int, c_void},
     marker::PhantomData,
 };
 
-use crate::{Conflict, Model, SatResult};
-
 extern "C" {
     fn solver_new() -> *mut c_void;
     fn solver_new_var(s: *mut c_void) -> c_int;
+    fn solver_num_var(s: *mut c_void) -> c_int;
     fn solver_add_clause(s: *mut c_void, clause: *mut c_int, len: c_int) -> bool;
     fn solver_solve(s: *mut c_void, assumps: *mut c_int, len: c_int) -> bool;
     fn solver_simplify(s: *mut c_void) -> bool;
@@ -30,7 +30,11 @@ impl Solver {
     }
 
     pub fn new_var(&mut self) -> Var {
-        Var::new(unsafe { solver_new_var(self.solver) } as u32)
+        Var::new(unsafe { solver_new_var(self.solver) } as usize)
+    }
+
+    pub fn num_var(&self) -> usize {
+        unsafe { solver_num_var(self.solver) as _ }
     }
 
     pub fn add_clause(&mut self, clause: &[Lit]) {
@@ -108,5 +112,12 @@ fn test() {
             dbg!(model.lit_value(lit2));
         }
         SatResult::Unsat(_) => todo!(),
+    }
+    solver.add_clause(&Clause::from([!lit0]));
+    match solver.solve(&[lit2]) {
+        SatResult::Sat(_) => panic!(),
+        SatResult::Unsat(conflict) => {
+            dbg!(conflict.has(!lit2));
+        }
     }
 }
