@@ -67,3 +67,9 @@ impl Drop for SimpSolver {
         unsafe { simp_solver_free(self.solver) }
     }
 }
+
+impl Default for SimpSolver {
+    fn default() -> Self {
+        Self::new()
+    }
+}

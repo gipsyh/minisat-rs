@@ -81,14 +81,18 @@ impl Solver {
         unsafe { solver_set_rnd_init_act(self.solver, enable) }
     }
 
-    pub unsafe fn get_model(&self) -> Model {
+    /// # Safety
+    /// unsafe get sat model
+    pub unsafe fn get_model(&self) -> Model<'static> {
         Model {
             solver: self.solver,
             _pd: PhantomData,
         }
     }
 
-    pub unsafe fn get_conflict(&self) -> Conflict {
+    /// # Safety
+    /// unsafe get unsat core
+    pub unsafe fn get_conflict(&self) -> Conflict<'static> {
         Conflict {
             solver: self.solver,
             _pd: PhantomData,
@@ -99,6 +103,12 @@ impl Solver {
 impl Drop for Solver {
     fn drop(&mut self) {
         unsafe { solver_free(self.solver) }
+    }
+}
+
+impl Default for Solver {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
