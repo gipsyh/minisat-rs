@@ -39,7 +39,9 @@ impl Solver {
     }
 
     pub fn add_clause(&mut self, clause: &[Lit]) {
-        assert!(unsafe { solver_add_clause(self.solver, clause.as_ptr() as _, clause.len() as _) });
+        if !unsafe { solver_add_clause(self.solver, clause.as_ptr() as _, clause.len() as _) } {
+            println!("warning: minisat add_clause fail");
+        }
     }
 
     pub fn solve<'a>(&'a mut self, assumps: &[Lit]) -> SatResult<'a> {
@@ -56,8 +58,10 @@ impl Solver {
         }
     }
 
-    pub fn simplify(&mut self) -> bool {
-        unsafe { solver_simplify(self.solver) }
+    pub fn simplify(&mut self) {
+        if !unsafe { solver_simplify(self.solver) } {
+            println!("warning: minisat simplify fail");
+        }
     }
 
     pub fn release_var(&mut self, lit: Lit) {
