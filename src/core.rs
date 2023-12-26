@@ -128,9 +128,9 @@ fn test() {
     solver.add_clause(&Clause::from([!lit0, !lit1, lit2]));
     match solver.solve(&[lit2]) {
         SatResult::Sat(model) => {
-            dbg!(model.lit_value(lit0));
-            dbg!(model.lit_value(lit1));
-            dbg!(model.lit_value(lit2));
+            assert!(model.lit_value(lit0));
+            assert!(model.lit_value(lit1));
+            assert!(model.lit_value(lit2));
         }
         SatResult::Unsat(_) => todo!(),
     }
@@ -138,7 +138,7 @@ fn test() {
     match solver.solve(&[lit2]) {
         SatResult::Sat(_) => panic!(),
         SatResult::Unsat(conflict) => {
-            dbg!(conflict.has(!lit2));
+            assert!(conflict.has(lit2));
         }
     }
 }

@@ -35,7 +35,7 @@ pub struct Conflict<'a> {
 
 impl Conflict<'_> {
     pub fn has(&self, lit: Lit) -> bool {
-        unsafe { solver_conflict_has(self.solver, lit.into()) }
+        unsafe { solver_conflict_has(self.solver, (!lit).into()) }
     }
 }
 
