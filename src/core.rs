@@ -128,9 +128,9 @@ fn test() {
     solver.add_clause(&Clause::from([!lit0, !lit1, lit2]));
     match solver.solve(&[lit2]) {
         SatResult::Sat(model) => {
-            assert!(model.lit_value(lit0));
-            assert!(model.lit_value(lit1));
-            assert!(model.lit_value(lit2));
+            assert!(model.lit_value(lit0).unwrap());
+            assert!(model.lit_value(lit1).unwrap());
+            assert!(model.lit_value(lit2).unwrap());
         }
         SatResult::Unsat(_) => todo!(),
     }

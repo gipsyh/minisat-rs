@@ -21,10 +21,10 @@ pub struct Model<'a> {
 }
 
 impl Model<'_> {
-    pub fn lit_value(&self, lit: Lit) -> bool {
+    pub fn lit_value(&self, lit: Lit) -> Option<bool> {
         let res = unsafe { solver_model_value(self.solver, lit.into()) };
         assert!(res == 0 || res == 1);
-        res == 0
+        Some(res == 0)
     }
 }
 
