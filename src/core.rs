@@ -1,9 +1,7 @@
-use crate::{Conflict, Model, SatResult};
+use crate::{Conflict, Model};
 use logic_form::{Lit, Var};
-use std::{
-    ffi::{c_int, c_void},
-    marker::PhantomData,
-};
+use satif::{SatResult, Satif};
+use std::ffi::{c_int, c_void};
 
 extern "C" {
     fn solver_new() -> *mut c_void;
@@ -23,41 +21,45 @@ pub struct Solver {
     solver: *mut c_void,
 }
 
-impl Solver {
-    pub fn new() -> Self {
+impl Satif for Solver {
+    type Sat = Model;
+
+    type Unsat = Conflict;
+
+    fn new() -> Self {
         Self {
             solver: unsafe { solver_new() },
         }
     }
 
-    pub fn new_var(&mut self) -> Var {
+    fn new_var(&mut self) -> Var {
         Var::new(unsafe { solver_new_var(self.solver) } as usize)
     }
 
-    pub fn num_var(&self) -> usize {
+    fn num_var(&self) -> usize {
         unsafe { solver_num_var(self.solver) as _ }
     }
 
-    pub fn add_clause(&mut self, clause: &[Lit]) {
+    fn add_clause(&mut self, clause: &[Lit]) {
         if !unsafe { solver_add_clause(self.solver, clause.as_ptr() as _, clause.len() as _) } {
             println!("warning: minisat add_clause fail");
         }
     }
 
-    pub fn solve<'a>(&'a mut self, assumps: &[Lit]) -> SatResult<'a> {
+    fn solve(&mut self, assumps: &[Lit]) -> satif::SatResult<Self::Sat, Self::Unsat> {
         if unsafe { solver_solve(self.solver, assumps.as_ptr() as _, assumps.len() as _) } {
             SatResult::Sat(Model {
                 solver: self.solver,
-                _pd: PhantomData,
             })
         } else {
             SatResult::Unsat(Conflict {
                 solver: self.solver,
-                _pd: PhantomData,
             })
         }
     }
+}
 
+impl Solver {
     pub fn simplify(&mut self) {
         if !unsafe { solver_simplify(self.solver) } {
             println!("warning: minisat simplify fail");
@@ -87,19 +89,17 @@ impl Solver {
 
     /// # Safety
     /// unsafe get sat model
-    pub unsafe fn get_model(&self) -> Model<'static> {
+    pub unsafe fn get_model(&self) -> Model {
         Model {
             solver: self.solver,
-            _pd: PhantomData,
         }
     }
 
     /// # Safety
     /// unsafe get unsat core
-    pub unsafe fn get_conflict(&self) -> Conflict<'static> {
+    pub unsafe fn get_conflict(&self) -> Conflict {
         Conflict {
             solver: self.solver,
-            _pd: PhantomData,
         }
     }
 }
@@ -119,6 +119,7 @@ impl Default for Solver {
 #[test]
 fn test() {
     use logic_form::Clause;
+    use satif::{SatifSat, SatifUnsat};
     let mut solver = Solver::new();
     let lit0: Lit = solver.new_var().into();
     let lit1: Lit = solver.new_var().into();
