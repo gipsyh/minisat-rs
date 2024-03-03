@@ -12,11 +12,11 @@ extern "C" {
     fn solver_conflict_has(s: *mut c_void, lit: c_int) -> bool;
 }
 
-pub struct Model {
+pub struct Sat {
     solver: *mut c_void,
 }
 
-impl SatifSat for Model {
+impl SatifSat for Sat {
     fn lit_value(&self, lit: Lit) -> Option<bool> {
         let res = unsafe { solver_model_value(self.solver, lit.into()) };
         assert!(res == 0 || res == 1);
@@ -24,11 +24,11 @@ impl SatifSat for Model {
     }
 }
 
-pub struct Conflict {
+pub struct Unsat {
     solver: *mut c_void,
 }
 
-impl SatifUnsat for Conflict {
+impl SatifUnsat for Unsat {
     fn has(&self, lit: Lit) -> bool {
         unsafe { solver_conflict_has(self.solver, (!lit).into()) }
     }

@@ -1,4 +1,4 @@
-use crate::{Conflict, Model};
+use crate::{Sat, Unsat};
 use logic_form::{Lit, Var};
 use satif::{SatResult, Satif};
 use std::ffi::{c_int, c_void};
@@ -22,9 +22,9 @@ pub struct Solver {
 }
 
 impl Satif for Solver {
-    type Sat = Model;
+    type Sat = Sat;
 
-    type Unsat = Conflict;
+    type Unsat = Unsat;
 
     fn new() -> Self {
         Self {
@@ -48,11 +48,11 @@ impl Satif for Solver {
 
     fn solve(&mut self, assumps: &[Lit]) -> satif::SatResult<Self::Sat, Self::Unsat> {
         if unsafe { solver_solve(self.solver, assumps.as_ptr() as _, assumps.len() as _) } {
-            SatResult::Sat(Model {
+            SatResult::Sat(Sat {
                 solver: self.solver,
             })
         } else {
-            SatResult::Unsat(Conflict {
+            SatResult::Unsat(Unsat {
                 solver: self.solver,
             })
         }
@@ -89,16 +89,16 @@ impl Solver {
 
     /// # Safety
     /// unsafe get sat model
-    pub unsafe fn get_model(&self) -> Model {
-        Model {
+    pub unsafe fn get_model(&self) -> Sat {
+        Sat {
             solver: self.solver,
         }
     }
 
     /// # Safety
     /// unsafe get unsat core
-    pub unsafe fn get_conflict(&self) -> Conflict {
-        Conflict {
+    pub unsafe fn get_conflict(&self) -> Unsat {
+        Unsat {
             solver: self.solver,
         }
     }
