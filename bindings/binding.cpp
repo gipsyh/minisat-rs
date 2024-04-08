@@ -118,6 +118,18 @@ void *solver_implies(void *s, int *assumps, int len, int *out_len)
 	*out_len = out->size();
 	return &(*out)[0];
 }
+
+double solver_get_bucket_sum(void *s)
+{
+	BindingSolver *slv = s;
+	return slv->pbucket_sum;
+}
+
+size_t solver_get_bucket_num(void *s)
+{
+	BindingSolver *slv = s;
+	return slv->pbucket_num;
+}
 }
 
 class BindingSimpSolver : public SimpSolver {

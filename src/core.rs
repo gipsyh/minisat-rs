@@ -1,6 +1,6 @@
 use logic_form::{Lit, Var};
 use satif::Satif;
-use std::ffi::{c_int, c_void};
+use std::ffi::{c_double, c_int, c_void};
 
 extern "C" {
     fn solver_new() -> *mut c_void;
@@ -22,6 +22,8 @@ extern "C" {
     ) -> *mut c_void;
     fn solver_model_value(s: *mut c_void, lit: c_int) -> c_int;
     fn solver_conflict_has(s: *mut c_void, lit: c_int) -> bool;
+    fn solver_get_bucket_sum(s: *mut c_void) -> c_double;
+    fn solver_get_bucket_num(s: *mut c_void) -> usize;
 }
 
 pub struct Solver {
@@ -108,6 +110,14 @@ impl Solver {
         (0..out_len)
             .map(|i| unsafe { *out_ptr.add(i as usize) })
             .collect()
+    }
+
+    pub fn get_bucket_sum(&self) -> f64 {
+        unsafe { solver_get_bucket_sum(self.solver) }
+    }
+
+    pub fn get_bucket_num(&self) -> usize {
+        unsafe { solver_get_bucket_num(self.solver) }
     }
 }
 
