@@ -34,7 +34,8 @@ void *solver_new()
 	return new BindingSolver();
 }
 
-void solver_free(void *s) {
+void solver_free(void *s)
+{
 	BindingSolver *slv = s;
 	delete slv;
 }
@@ -104,6 +105,18 @@ void solver_set_rnd_init_act(void *s, bool enable)
 	BindingSolver *slv = s;
 	slv->rnd_init_act = enable;
 }
+
+double solver_get_bucket_sum(void *s)
+{
+	BindingSolver *slv = s;
+	return slv->pbucket_sum;
+}
+
+size_t solver_get_bucket_num(void *s)
+{
+	BindingSolver *slv = s;
+	return slv->pbucket_num;
+}
 }
 
 class BindingSimpSolver : public SimpSolver {
@@ -125,7 +138,8 @@ void *simp_solver_new()
 	return new BindingSimpSolver();
 }
 
-void simp_solver_free(void *s) {
+void simp_solver_free(void *s)
+{
 	BindingSimpSolver *slv = s;
 	delete slv;
 }

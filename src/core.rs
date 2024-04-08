@@ -1,7 +1,7 @@
 use crate::{Sat, Unsat};
 use logic_form::{Lit, Var};
 use satif::{SatResult, Satif};
-use std::ffi::{c_int, c_void};
+use std::ffi::{c_double, c_int, c_void};
 
 extern "C" {
     fn solver_new() -> *mut c_void;
@@ -15,6 +15,8 @@ extern "C" {
     fn solver_set_random_seed(s: *mut c_void, seed: f64);
     fn solver_set_rnd_init_act(s: *mut c_void, enable: bool);
     fn solver_set_polarity(s: *mut c_void, var: c_int, pol: c_int);
+    fn solver_get_bucket_sum(s: *mut c_void) -> c_double;
+    fn solver_get_bucket_num(s: *mut c_void) -> usize;
 }
 
 pub struct Solver {
@@ -101,6 +103,14 @@ impl Solver {
         Unsat {
             solver: self.solver,
         }
+    }
+
+    pub fn get_bucket_sum(&self) -> f64 {
+        unsafe { solver_get_bucket_sum(self.solver) }
+    }
+
+    pub fn get_bucket_num(&self) -> usize {
+        unsafe { solver_get_bucket_num(self.solver) }
     }
 }
 
