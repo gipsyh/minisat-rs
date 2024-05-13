@@ -34,7 +34,8 @@ void *solver_new()
 	return new BindingSolver();
 }
 
-void solver_free(void *s) {
+void solver_free(void *s)
+{
 	BindingSolver *slv = s;
 	delete slv;
 }
@@ -104,6 +105,21 @@ void solver_set_rnd_init_act(void *s, bool enable)
 	BindingSolver *slv = s;
 	slv->rnd_init_act = enable;
 }
+
+void *solver_implies(void *s, int *assumps, int len, int *out_len)
+{
+	BindingSolver *slv = s;
+	vec<Lit> a;
+	Lit *asp = (Lit *)assumps;
+	for (int i = 0; i < len; ++i)
+		a.push(asp[i]);
+	vec<Lit> out;
+	slv->implies(a, out);
+	printf("%d\n", out.size());
+	*out_len = out.size();
+	printf("%d\n", out[0]);
+	return out.data;
+}
 }
 
 class BindingSimpSolver : public SimpSolver {
@@ -125,7 +141,8 @@ void *simp_solver_new()
 	return new BindingSimpSolver();
 }
 
-void simp_solver_free(void *s) {
+void simp_solver_free(void *s)
+{
 	BindingSimpSolver *slv = s;
 	delete slv;
 }

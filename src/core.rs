@@ -15,6 +15,13 @@ extern "C" {
     fn solver_set_random_seed(s: *mut c_void, seed: f64);
     fn solver_set_rnd_init_act(s: *mut c_void, enable: bool);
     fn solver_set_polarity(s: *mut c_void, var: c_int, pol: c_int);
+    fn solver_implies(
+        s: *mut c_void,
+        assumps: *mut c_int,
+        len: c_int,
+        out_len: *mut c_int,
+    ) -> *mut c_void;
+
 }
 
 pub struct Solver {
@@ -85,6 +92,20 @@ impl Solver {
 
     pub fn set_rnd_init_act(&mut self, enable: bool) {
         unsafe { solver_set_rnd_init_act(self.solver, enable) }
+    }
+
+    pub fn implies(&self, assumps: &[Lit]) -> Vec<Lit> {
+        let mut out_len = 0;
+        let out_ptr: *mut Lit = unsafe {
+            solver_implies(
+                self.solver,
+                assumps.as_ptr() as _,
+                assumps.len() as _,
+                &mut out_len,
+            ) as _
+        };
+        dbg!(out_len);
+        unsafe { Vec::from_raw_parts(out_ptr, out_len as _, out_len as _) }
     }
 
     /// # Safety

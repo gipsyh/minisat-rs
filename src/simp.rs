@@ -32,9 +32,9 @@ impl SimpSolver {
     }
 
     pub fn add_clause(&mut self, clause: &[Lit]) {
-        assert!(unsafe {
+        unsafe {
             simp_solver_add_clause(self.solver, clause.as_ptr() as _, clause.len() as _)
-        });
+        };
     }
 
     pub fn set_frozen(&mut self, var: Var, frozen: bool) {
