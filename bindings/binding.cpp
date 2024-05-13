@@ -113,12 +113,10 @@ void *solver_implies(void *s, int *assumps, int len, int *out_len)
 	Lit *asp = (Lit *)assumps;
 	for (int i = 0; i < len; ++i)
 		a.push(asp[i]);
-	vec<Lit> out;
-	slv->implies(a, out);
-	printf("%d\n", out.size());
-	*out_len = out.size();
-	printf("%d\n", out[0]);
-	return out.data;
+	vec<Lit> *out = new vec<Lit>();
+	slv->implies(a, *out);
+	*out_len = out->size();
+	return out->data;
 }
 }
 

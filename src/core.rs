@@ -104,7 +104,6 @@ impl Solver {
                 &mut out_len,
             ) as _
         };
-        dbg!(out_len);
         unsafe { Vec::from_raw_parts(out_ptr, out_len as _, out_len as _) }
     }
 
