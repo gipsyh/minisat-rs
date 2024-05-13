@@ -116,7 +116,7 @@ void *solver_implies(void *s, int *assumps, int len, int *out_len)
 	vec<Lit> *out = new vec<Lit>();
 	slv->implies(a, *out);
 	*out_len = out->size();
-	return out->data;
+	return &(*out)[0];
 }
 }
 
