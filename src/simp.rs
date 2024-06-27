@@ -1,5 +1,5 @@
 use crate::*;
-use logic_form::{Clause, Cnf, Var};
+use logic_form::{Clause, Var};
 
 extern "C" {
     fn simp_solver_new() -> *mut c_void;
@@ -43,9 +43,9 @@ impl SimpSolver {
         unsafe { simp_solver_eliminate(self.solver, turn_off_elim) }
     }
 
-    pub fn clauses(&self) -> Cnf {
+    pub fn clauses(&self) -> Vec<Clause> {
         unsafe {
-            let mut cnf = Cnf::new();
+            let mut cnf = Vec::new();
             let mut len = 0;
             let clauses: *mut usize = simp_solver_clauses(self.solver, &mut len as *mut _) as _;
             let clauses = Vec::from_raw_parts(clauses, len as _, len as _);
@@ -53,7 +53,7 @@ impl SimpSolver {
                 let data = clauses[i] as *mut Lit;
                 let len = clauses[i + 1];
                 let cls = Vec::from_raw_parts(data, len, len);
-                cnf.add_clause(Clause::from(cls));
+                cnf.push(Clause::from(cls));
             }
             cnf
         }
