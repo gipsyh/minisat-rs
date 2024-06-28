@@ -18,7 +18,7 @@ pub struct Sat {
 
 impl SatifSat for Sat {
     fn lit_value(&self, lit: Lit) -> Option<bool> {
-        let res = unsafe { solver_model_value(self.solver, lit.into()) };
+        let res = unsafe { solver_model_value(self.solver, Into::<u32>::into(lit) as _) };
         assert!(res == 0 || res == 1);
         Some(res == 0)
     }
@@ -30,6 +30,6 @@ pub struct Unsat {
 
 impl SatifUnsat for Unsat {
     fn has(&self, lit: Lit) -> bool {
-        unsafe { solver_conflict_has(self.solver, (!lit).into()) }
+        unsafe { solver_conflict_has(self.solver, Into::<u32>::into(!lit) as _) }
     }
 }

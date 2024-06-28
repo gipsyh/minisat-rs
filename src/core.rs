@@ -74,7 +74,7 @@ impl Solver {
     }
 
     pub fn release_var(&mut self, lit: Lit) {
-        unsafe { solver_release_var(self.solver, lit.into()) }
+        unsafe { solver_release_var(self.solver, Into::<u32>::into(lit) as _) }
     }
 
     pub fn set_polarity(&mut self, var: Var, pol: Option<bool>) {
