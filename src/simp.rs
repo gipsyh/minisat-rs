@@ -1,4 +1,5 @@
 use logic_form::{Clause, Lit, Var};
+use satif::Satif;
 use std::ffi::{c_int, c_void};
 
 extern "C" {
@@ -16,34 +17,42 @@ pub struct SimpSolver {
     solver: *mut c_void,
 }
 
-impl SimpSolver {
-    pub fn new() -> Self {
+impl Satif for SimpSolver {
+    fn new() -> Self {
         Self {
             solver: unsafe { simp_solver_new() },
         }
     }
 
-    pub fn new_var(&mut self) -> Var {
+    fn new_var(&mut self) -> Var {
         Var::new(unsafe { simp_solver_new_var(self.solver) } as usize)
     }
 
-    pub fn num_var(&self) -> usize {
+    fn num_var(&self) -> usize {
         unsafe { simp_solver_num_var(self.solver) as _ }
     }
 
-    pub fn add_clause(&mut self, clause: &[Lit]) {
+    fn add_clause(&mut self, clause: &[Lit]) {
         unsafe { simp_solver_add_clause(self.solver, clause.as_ptr() as _, clause.len() as _) };
     }
 
-    pub fn set_frozen(&mut self, var: Var, frozen: bool) {
+    fn solve(&mut self, _assumps: &[Lit]) -> bool {
+        todo!()
+    }
+
+    fn sat_value(&mut self, _lit: Lit) -> Option<bool> {
+        todo!()
+    }
+
+    fn simplify(&mut self) {
+        unsafe { simp_solver_eliminate(self.solver, true) };
+    }
+
+    fn set_frozen(&mut self, var: Var, frozen: bool) {
         unsafe { simp_solver_set_frozen(self.solver, Into::<i32>::into(var) as _, frozen) }
     }
 
-    pub fn eliminate(&mut self, turn_off_elim: bool) -> bool {
-        unsafe { simp_solver_eliminate(self.solver, turn_off_elim) }
-    }
-
-    pub fn clauses(&self) -> Vec<Clause> {
+    fn clauses(&self) -> Vec<Clause> {
         unsafe {
             let mut cnf = Vec::new();
             let mut len = 0;
