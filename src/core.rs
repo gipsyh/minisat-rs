@@ -1,6 +1,5 @@
-use crate::{Sat, Unsat};
 use logic_form::{Lit, Var};
-use satif::{SatResult, Satif};
+use satif::Satif;
 use std::ffi::{c_int, c_void};
 
 extern "C" {
@@ -21,7 +20,8 @@ extern "C" {
         len: c_int,
         out_len: *mut c_int,
     ) -> *mut c_void;
-
+    fn solver_model_value(s: *mut c_void, lit: c_int) -> c_int;
+    fn solver_conflict_has(s: *mut c_void, lit: c_int) -> bool;
 }
 
 pub struct Solver {
@@ -29,10 +29,6 @@ pub struct Solver {
 }
 
 impl Satif for Solver {
-    type Sat = Sat;
-
-    type Unsat = Unsat;
-
     fn new() -> Self {
         Self {
             solver: unsafe { solver_new() },
@@ -53,26 +49,28 @@ impl Satif for Solver {
         }
     }
 
-    fn solve(&mut self, assumps: &[Lit]) -> satif::SatResult<Self::Sat, Self::Unsat> {
-        if unsafe { solver_solve(self.solver, assumps.as_ptr() as _, assumps.len() as _) } {
-            SatResult::Sat(Sat {
-                solver: self.solver,
-            })
-        } else {
-            SatResult::Unsat(Unsat {
-                solver: self.solver,
-            })
+    fn solve(&mut self, assumps: &[Lit]) -> bool {
+        unsafe { solver_solve(self.solver, assumps.as_ptr() as _, assumps.len() as _) }
+    }
+
+    fn sat_value(&mut self, lit: Lit) -> Option<bool> {
+        let res = unsafe { solver_model_value(self.solver, Into::<u32>::into(lit) as _) };
+        assert!(res == 0 || res == 1);
+        Some(res == 0)
+    }
+
+    fn unsat_has(&mut self, lit: Lit) -> bool {
+        unsafe { solver_conflict_has(self.solver, Into::<u32>::into(!lit) as _) }
+    }
+
+    fn simplify(&mut self) {
+        if !unsafe { solver_simplify(self.solver) } {
+            println!("warning: minisat simplify fail");
         }
     }
 }
 
 impl Solver {
-    pub fn simplify(&mut self) {
-        if !unsafe { solver_simplify(self.solver) } {
-            println!("warning: minisat simplify fail");
-        }
-    }
-
     pub fn release_var(&mut self, lit: Lit) {
         unsafe { solver_release_var(self.solver, Into::<u32>::into(lit) as _) }
     }
@@ -105,22 +103,6 @@ impl Solver {
             ) as _
         };
         unsafe { Vec::from_raw_parts(out_ptr, out_len as _, out_len as _) }
-    }
-
-    /// # Safety
-    /// unsafe get sat model
-    pub unsafe fn get_model(&self) -> Sat {
-        Sat {
-            solver: self.solver,
-        }
-    }
-
-    /// # Safety
-    /// unsafe get unsat core
-    pub unsafe fn get_conflict(&self) -> Unsat {
-        Unsat {
-            solver: self.solver,
-        }
     }
 }
 
