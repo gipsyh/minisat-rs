@@ -28,13 +28,15 @@ pub struct Solver {
     solver: *mut c_void,
 }
 
-impl Satif for Solver {
-    fn new() -> Self {
+impl Solver {
+    pub fn new() -> Self {
         Self {
             solver: unsafe { solver_new() },
         }
     }
+}
 
+impl Satif for Solver {
     fn new_var(&mut self) -> Var {
         Var::new(unsafe { solver_new_var(self.solver) } as usize)
     }

@@ -17,13 +17,15 @@ pub struct SimpSolver {
     solver: *mut c_void,
 }
 
-impl Satif for SimpSolver {
-    fn new() -> Self {
+impl SimpSolver {
+    pub fn new() -> Self {
         Self {
             solver: unsafe { simp_solver_new() },
         }
     }
+}
 
+impl Satif for SimpSolver {
     fn new_var(&mut self) -> Var {
         Var::new(unsafe { simp_solver_new_var(self.solver) } as usize)
     }
