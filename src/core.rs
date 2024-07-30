@@ -121,7 +121,6 @@ impl Default for Solver {
 #[test]
 fn test() {
     use logic_form::Clause;
-    use satif::{SatifSat, SatifUnsat};
     let mut solver = Solver::new();
     let lit0: Lit = solver.new_var().into();
     let lit1: Lit = solver.new_var().into();
@@ -129,19 +128,17 @@ fn test() {
     solver.add_clause(&Clause::from([lit0, !lit2]));
     solver.add_clause(&Clause::from([lit1, !lit2]));
     solver.add_clause(&Clause::from([!lit0, !lit1, lit2]));
-    match solver.solve(&[lit2]) {
-        SatResult::Sat(model) => {
-            assert!(model.lit_value(lit0).unwrap());
-            assert!(model.lit_value(lit1).unwrap());
-            assert!(model.lit_value(lit2).unwrap());
-        }
-        SatResult::Unsat(_) => todo!(),
+    if solver.solve(&[lit2]) {
+        assert!(solver.sat_value(lit0).unwrap());
+        assert!(solver.sat_value(lit1).unwrap());
+        assert!(solver.sat_value(lit2).unwrap());
+    } else {
+        panic!();
     }
     solver.add_clause(&Clause::from([!lit0]));
-    match solver.solve(&[lit2]) {
-        SatResult::Sat(_) => panic!(),
-        SatResult::Unsat(conflict) => {
-            assert!(conflict.has(lit2));
-        }
+    if !solver.solve(&[lit2]) {
+        assert!(solver.unsat_has(lit2));
+    } else {
+        panic!();
     }
 }

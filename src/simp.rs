@@ -1,5 +1,5 @@
-use crate::*;
-use logic_form::{Clause, Var};
+use logic_form::{Clause, Lit, Var};
+use std::ffi::{c_int, c_void};
 
 extern "C" {
     fn simp_solver_new() -> *mut c_void;
