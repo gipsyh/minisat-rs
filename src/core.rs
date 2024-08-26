@@ -65,10 +65,11 @@ impl Satif for Solver {
         unsafe { solver_conflict_has(self.solver, Into::<u32>::into(!lit) as _) }
     }
 
-    fn simplify(&mut self) {
+    fn simplify(&mut self) -> Option<bool> {
         if !unsafe { solver_simplify(self.solver) } {
-            println!("warning: minisat simplify fail");
+            return Some(false);
         }
+        None
     }
 }
 

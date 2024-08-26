@@ -46,8 +46,11 @@ impl Satif for SimpSolver {
         todo!()
     }
 
-    fn simplify(&mut self) {
-        unsafe { simp_solver_eliminate(self.solver, true) };
+    fn simplify(&mut self) -> Option<bool> {
+        if !unsafe { simp_solver_eliminate(self.solver, true) } {
+            return Some(false);
+        }
+        None
     }
 
     fn set_frozen(&mut self, var: Var, frozen: bool) {
