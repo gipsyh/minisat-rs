@@ -105,7 +105,9 @@ impl Solver {
                 &mut out_len,
             ) as _
         };
-        unsafe { Vec::from_raw_parts(out_ptr, out_len as _, out_len as _) }
+        (0..out_len)
+            .map(|i| unsafe { *out_ptr.add(i as usize) })
+            .collect()
     }
 }
 
