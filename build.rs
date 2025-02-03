@@ -1,14 +1,9 @@
 use cmake::Config;
 use std::env;
 use std::path::PathBuf;
-use std::process::Command;
 
 fn main() -> Result<(), String> {
-    Command::new("git")
-        .args(["submodule", "update", "--init"])
-        .status()
-        .expect("Failed to update submodules.");
-
+    giputils::build::git_submodule_update()?;
     let out_dir = env::var("OUT_DIR")
         .map_err(|_| "Environmental variable `OUT_DIR` not defined.".to_string())?;
 
@@ -25,6 +20,9 @@ fn main() -> Result<(), String> {
     );
     println!("cargo:rustc-link-lib=static=bindings");
     println!("cargo:rustc-link-lib=static=minisat");
+    #[cfg(target_os = "linux")]
     println!("cargo:rustc-link-lib=dylib=stdc++");
+    #[cfg(target_os = "macos")]
+    println!("cargo:rustc-link-lib=dylib=c++");
     Ok(())
 }

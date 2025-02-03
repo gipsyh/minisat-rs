@@ -1,6 +1,6 @@
 [package]
 name = "satif-minisat"
-version = "0.2.4"
+version = "0.2.5"
 edition = "2021"
 license = "MIT"
 description = "Rust wrapper for the minisat SAT solver"
@@ -14,3 +14,4 @@ satif = { path = "../satif", version = "0.1"}
 
 [build-dependencies]
 cmake = "0.1.50"
+giputils = { path = "../giputils", version = "0.2.5" }
