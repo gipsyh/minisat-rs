@@ -1,4 +1,4 @@
-use logic_form::{Clause, Lit, Var};
+use logic_form::{Lit, LitVec, Var};
 use satif::Satif;
 use std::ffi::{c_int, c_void};
 
@@ -57,7 +57,7 @@ impl Satif for SimpSolver {
         unsafe { simp_solver_set_frozen(self.solver, Into::<i32>::into(var) as _, frozen) }
     }
 
-    fn clauses(&self) -> Vec<Clause> {
+    fn clauses(&self) -> Vec<LitVec> {
         unsafe {
             let mut cnf = Vec::new();
             let mut len = 0;
@@ -67,7 +67,7 @@ impl Satif for SimpSolver {
                 let data = clauses[i] as *mut Lit;
                 let len = clauses[i + 1];
                 let cls = Vec::from_raw_parts(data, len, len);
-                cnf.push(Clause::from(cls));
+                cnf.push(LitVec::from_iter(cls));
             }
             cnf
         }

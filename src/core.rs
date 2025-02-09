@@ -125,14 +125,14 @@ impl Default for Solver {
 
 #[test]
 fn test() {
-    use logic_form::Clause;
+    use logic_form::LitVec;
     let mut solver = Solver::new();
     let lit0: Lit = solver.new_var().into();
     let lit1: Lit = solver.new_var().into();
     let lit2: Lit = solver.new_var().into();
-    solver.add_clause(&Clause::from([lit0, !lit2]));
-    solver.add_clause(&Clause::from([lit1, !lit2]));
-    solver.add_clause(&Clause::from([!lit0, !lit1, lit2]));
+    solver.add_clause(&LitVec::from([lit0, !lit2]));
+    solver.add_clause(&LitVec::from([lit1, !lit2]));
+    solver.add_clause(&LitVec::from([!lit0, !lit1, lit2]));
     if solver.solve(&[lit2]) {
         assert!(solver.sat_value(lit0).unwrap());
         assert!(solver.sat_value(lit1).unwrap());
@@ -140,7 +140,7 @@ fn test() {
     } else {
         panic!();
     }
-    solver.add_clause(&Clause::from([!lit0]));
+    solver.add_clause(&LitVec::from([!lit0]));
     if !solver.solve(&[lit2]) {
         assert!(solver.unsat_has(lit2));
     } else {
