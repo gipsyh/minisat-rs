@@ -55,13 +55,13 @@ impl Satif for Solver {
         unsafe { solver_solve(self.solver, assumps.as_ptr() as _, assumps.len() as _) }
     }
 
-    fn sat_value(&mut self, lit: Lit) -> Option<bool> {
+    fn sat_value(&self, lit: Lit) -> Option<bool> {
         let res = unsafe { solver_model_value(self.solver, Into::<u32>::into(lit) as _) };
         assert!(res == 0 || res == 1);
         Some(res == 0)
     }
 
-    fn unsat_has(&mut self, lit: Lit) -> bool {
+    fn unsat_has(&self, lit: Lit) -> bool {
         unsafe { solver_conflict_has(self.solver, Into::<u32>::into(!lit) as _) }
     }
 

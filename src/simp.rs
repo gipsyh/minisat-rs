@@ -42,7 +42,7 @@ impl Satif for SimpSolver {
         todo!()
     }
 
-    fn sat_value(&mut self, _lit: Lit) -> Option<bool> {
+    fn sat_value(&self, _lit: Lit) -> Option<bool> {
         todo!()
     }
 

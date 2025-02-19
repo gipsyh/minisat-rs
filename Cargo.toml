@@ -1,6 +1,6 @@
 [package]
 name = "satif-minisat"
-version = "0.2.6"
+version = "0.2.7"
 edition = "2021"
 license = "MIT"
 description = "Rust wrapper for the minisat SAT solver"
@@ -10,7 +10,7 @@ authors = ["Yuheng Su <gipsyh.icu@gmail.com>"]
 
 [dependencies]
 logic-form = { path = "../logic-form", version = "0.3.0"}
-satif = { path = "../satif", version = "0.1.4"}
+satif = { path = "../satif", version = "0.2.0"}
 
 [build-dependencies]
 cmake = "0.1.50"
